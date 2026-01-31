@@ -198,9 +198,7 @@ describe('OTLPMetricExporter', () => {
         try {
           // assert
           const requestBody = buff.toString();
-          assert.doesNotThrow(() => {
-            JSON.parse(requestBody);
-          }, 'expected requestBody to be in JSON format, but parsing failed');
+          JSON.parse(requestBody);
           done();
         } catch (e) {
           done(e);

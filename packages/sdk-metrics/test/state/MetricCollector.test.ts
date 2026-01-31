@@ -46,9 +46,7 @@ describe('MetricCollector', () => {
       );
       const readers = [new TestMetricReader(), new TestDeltaMetricReader()];
       for (const reader of readers) {
-        assert.doesNotThrow(
-          () => new MetricCollector(meterProviderSharedState, reader)
-        );
+        new MetricCollector(meterProviderSharedState, reader);
       }
     });
   });

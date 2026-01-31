@@ -56,25 +56,17 @@ import { ShimWrapped } from '../../src';
 describe('Shimmer', function () {
   describe('init', function () {
     it('shimmer initialization', function () {
-      assert.doesNotThrow(function () {
-        (shimmer as any)();
-      });
+      (shimmer as any)();
       const mock = sinon.expectation
         .create('logger')
         .withArgs('no original function undefined to wrap')
         .once();
 
-      assert.doesNotThrow(function () {
-        shimmer({ logger: mock });
-      }, "initializer doesn't throw");
+      shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).wrap();
-      }, "invoking the wrap method with no params doesn't throw");
+      (shimmer as any).wrap();
 
-      assert.doesNotThrow(function () {
-        mock.verify();
-      }, 'logger method was called with the expected message');
+      mock.verify();
     });
 
     it('shimmer initialized with non-function logger', function () {
@@ -85,13 +77,9 @@ describe('Shimmer', function () {
 
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        shimmer({ logger: { ham: 'chunx' } } as any);
-      }, "even bad initialization doesn't throw");
+      shimmer({ logger: { ham: 'chunx' } } as any);
 
-      assert.doesNotThrow(function () {
-        mock.verify();
-      }, 'logger initialization failed in the expected way');
+      mock.verify();
     });
   });
 
@@ -117,9 +105,7 @@ describe('Shimmer', function () {
 
     it('should wrap safely', function () {
       assert.equal(counter, generator.inc, 'method is mapped to function');
-      assert.doesNotThrow(function () {
-        generator.inc();
-      }, 'original function works');
+      generator.inc();
       assert.equal(1, outsider, 'calls have side effects');
 
       let count = 0;
@@ -142,9 +128,7 @@ describe('Shimmer', function () {
         counter,
         'original function is available'
       );
-      assert.doesNotThrow(function () {
-        generator.inc();
-      }, 'wrapping works');
+      generator.inc();
       assert.equal(
         2,
         count,
@@ -180,13 +164,9 @@ describe('Shimmer', function () {
         .once();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).wrap();
-      }, "wrapping with no arguments doesn't throw");
+      (shimmer as any).wrap();
 
-      assert.doesNotThrow(function () {
-        mock.verify();
-      }, 'logger was called with the expected message');
+      mock.verify();
     });
 
     it('wrap called with module but nothing else', function () {
@@ -196,26 +176,18 @@ describe('Shimmer', function () {
         .once();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).wrap(generator);
-      }, "wrapping with only 1 argument doesn't throw");
+      (shimmer as any).wrap(generator);
 
-      assert.doesNotThrow(function () {
-        mock.verify();
-      }, 'logger was called with the expected message');
+      mock.verify();
     });
 
     it('wrap called with original but no wrapper', function () {
       const mock = sinon.expectation.create('logger').twice();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).wrap(generator, 'inc');
-      }, "wrapping with only original method doesn't throw");
+      (shimmer as any).wrap(generator, 'inc');
 
-      assert.doesNotThrow(function () {
-        mock.verify();
-      }, 'logger was called with the expected message');
+      mock.verify();
     });
 
     it('wrap called with non-function original', function () {
@@ -225,13 +197,9 @@ describe('Shimmer', function () {
         .once();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        shimmer.wrap({ orange: 'slices' }, 'orange', function () {} as any);
-      }, "wrapping non-function original doesn't throw");
+      shimmer.wrap({ orange: 'slices' }, 'orange', function () {} as any);
 
-      assert.doesNotThrow(function () {
-        mock.verify();
-      }, 'logger was called with the expected message');
+      mock.verify();
     });
 
     it('wrap called with non-function wrapper', function () {
@@ -241,13 +209,9 @@ describe('Shimmer', function () {
         .once();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).wrap({ orange: function () {} }, 'orange', 'hamchunx');
-      }, "wrapping with non-function wrapper doesn't throw");
+      (shimmer as any).wrap({ orange: function () {} }, 'orange', 'hamchunx');
 
-      assert.doesNotThrow(function () {
-        mock.verify();
-      }, 'logger was called with the expected message');
+      mock.verify();
     });
   });
 
@@ -268,9 +232,7 @@ describe('Shimmer', function () {
         generator.inc,
         'basic function equality testing should work'
       );
-      assert.doesNotThrow(function () {
-        generator.inc();
-      });
+      generator.inc();
       assert.equal(1, outsider, 'calls have side effects');
 
       function wrapper(original: any) {
@@ -282,9 +244,7 @@ describe('Shimmer', function () {
 
       assert.notEqual(counter, generator.inc, 'function should be wrapped');
 
-      assert.doesNotThrow(function () {
-        generator.inc();
-      });
+      generator.inc();
       assert.equal(2, outsider, 'original function has still been called');
 
       shimmer.unwrap(generator, 'inc');
@@ -293,9 +253,7 @@ describe('Shimmer', function () {
         generator.inc,
         'basic function equality testing should work'
       );
-      assert.doesNotThrow(function () {
-        generator.inc();
-      });
+      generator.inc();
       assert.equal(3, outsider, 'original function has still been called');
     });
 
@@ -330,9 +288,7 @@ describe('Shimmer', function () {
         'basic function equality testing should work'
       );
 
-      assert.doesNotThrow(function () {
-        shimmer.unwrap(generator, 'inc');
-      }, 'should double unwrap without issue');
+      shimmer.unwrap(generator, 'inc');
       assert.equal(
         counter,
         generator.inc,
@@ -346,9 +302,7 @@ describe('Shimmer', function () {
       const mock = sinon.expectation.create('logger').twice();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).unwrap();
-      }, 'should log instead of throwing');
+      (shimmer as any).unwrap();
 
       mock.verify();
     });
@@ -357,9 +311,7 @@ describe('Shimmer', function () {
       const mock = sinon.expectation.create('logger').twice();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).unwrap({});
-      }, 'should log instead of throwing');
+      (shimmer as any).unwrap({});
 
       mock.verify();
     });
@@ -400,12 +352,8 @@ describe('Shimmer', function () {
         generator.dec,
         'basic function equality testing should work'
       );
-      assert.doesNotThrow(function () {
-        generator.inc();
-      });
-      assert.doesNotThrow(function () {
-        generator.dec();
-      });
+      generator.inc();
+      generator.dec();
       assert.equal(0, outsider, 'calls have side effects');
 
       let count = 0;
@@ -419,12 +367,8 @@ describe('Shimmer', function () {
       }
       (shimmer as any).massWrap(generator, ['inc', 'dec'], wrapper);
 
-      assert.doesNotThrow(function () {
-        generator.inc();
-      });
-      assert.doesNotThrow(function () {
-        generator.dec();
-      });
+      generator.inc();
+      generator.dec();
       assert.equal(
         4,
         count,
@@ -455,18 +399,10 @@ describe('Shimmer', function () {
         'basic function equality testing should work'
       );
 
-      assert.doesNotThrow(function () {
-        arrow.in();
-      });
-      assert.doesNotThrow(function () {
-        nester.in();
-      });
-      assert.doesNotThrow(function () {
-        arrow.out();
-      });
-      assert.doesNotThrow(function () {
-        nester.out();
-      });
+      arrow.in();
+      nester.in();
+      arrow.out();
+      nester.out();
 
       assert.equal(0, outsider, 'calls have side effects');
 
@@ -482,18 +418,10 @@ describe('Shimmer', function () {
       }
       shimmer.massWrap([arrow, nester], ['in', 'out'], wrapper);
 
-      assert.doesNotThrow(function () {
-        arrow.in();
-      });
-      assert.doesNotThrow(function () {
-        arrow.out();
-      });
-      assert.doesNotThrow(function () {
-        nester.in();
-      });
-      assert.doesNotThrow(function () {
-        nester.out();
-      });
+      arrow.in();
+      arrow.out();
+      nester.in();
+      nester.out();
 
       assert.equal(
         8,
@@ -507,13 +435,9 @@ describe('Shimmer', function () {
       const mock = sinon.expectation.create('logger').twice();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).massWrap();
-      }, "wrapping with no arguments doesn't throw");
+      (shimmer as any).massWrap();
 
-      assert.doesNotThrow(function () {
-        mock.verify();
-      }, 'logger was called with the expected message');
+      mock.verify();
     });
 
     it('wrap called with module but nothing else', function () {
@@ -523,22 +447,16 @@ describe('Shimmer', function () {
         .once();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).massWrap(generator);
-      }, "wrapping with only 1 argument doesn't throw");
+      (shimmer as any).massWrap(generator);
 
-      assert.doesNotThrow(function () {
-        mock.verify();
-      }, 'logger was called with the expected message');
+      mock.verify();
     });
 
     it('wrap called with original but no wrapper', function () {
       const mock = sinon.expectation.create('logger').twice();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).massWrap(generator, ['inc']);
-      }, "wrapping with only original function doesn't throw");
+      (shimmer as any).massWrap(generator, ['inc']);
 
       mock.verify();
     });
@@ -550,13 +468,7 @@ describe('Shimmer', function () {
         .once();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).massWrap(
-          { orange: 'slices' },
-          'orange',
-          function () {}
-        );
-      }, "wrapping non-function original doesn't throw");
+      (shimmer as any).massWrap({ orange: 'slices' }, 'orange', function () {});
 
       mock.verify();
     });
@@ -568,13 +480,11 @@ describe('Shimmer', function () {
         .once();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).massWrap(
-          { orange: function () {} },
-          'orange',
-          'hamchunx'
-        );
-      }, "wrapping with non-function wrapper doesn't throw");
+      (shimmer as any).massWrap(
+        { orange: function () {} },
+        'orange',
+        'hamchunx'
+      );
 
       mock.verify();
     });
@@ -606,13 +516,9 @@ describe('Shimmer', function () {
         generator.dec,
         'basic function equality testing should work'
       );
-      assert.doesNotThrow(function () {
-        generator.inc();
-      });
+      generator.inc();
       assert.equal(1, outsider, 'calls have side effects');
-      assert.doesNotThrow(function () {
-        generator.dec();
-      });
+      generator.dec();
       assert.equal(0, outsider, 'calls have side effects');
 
       function wrapper(original: any) {
@@ -626,13 +532,9 @@ describe('Shimmer', function () {
       assert.notEqual(counter, generator.inc, 'function should be wrapped');
       assert.notEqual(anticounter, generator.dec, 'function should be wrapped');
 
-      assert.doesNotThrow(function () {
-        generator.inc();
-      });
+      generator.inc();
       assert.equal(1, outsider, 'original function has still been called');
-      assert.doesNotThrow(function () {
-        generator.dec();
-      });
+      generator.dec();
       assert.equal(0, outsider, 'original function has still been called');
 
       shimmer.massUnwrap(generator, ['inc', 'dec']);
@@ -647,13 +549,9 @@ describe('Shimmer', function () {
         'basic function equality testing should work'
       );
 
-      assert.doesNotThrow(function () {
-        generator.inc();
-      });
+      generator.inc();
       assert.equal(1, outsider, 'original function has still been called');
-      assert.doesNotThrow(function () {
-        generator.dec();
-      });
+      generator.dec();
       assert.equal(0, outsider, 'original function has still been called');
     });
 
@@ -695,9 +593,7 @@ describe('Shimmer', function () {
         'basic function equality testing should work'
       );
 
-      assert.doesNotThrow(function () {
-        shimmer.massUnwrap(generator, ['inc', 'dec']);
-      }, 'should double unwrap without issue');
+      shimmer.massUnwrap(generator, ['inc', 'dec']);
       assert.equal(
         counter,
         generator.inc,
@@ -724,9 +620,7 @@ describe('Shimmer', function () {
       const mock = sinon.expectation.create('logger').twice();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).massUnwrap();
-      }, 'should log instead of throwing');
+      (shimmer as any).massUnwrap();
 
       mock.verify();
     });
@@ -740,9 +634,7 @@ describe('Shimmer', function () {
         .once();
       shimmer({ logger: mock });
 
-      assert.doesNotThrow(function () {
-        (shimmer as any).massUnwrap(generator);
-      }, "wrapping with only 1 argument doesn't throw");
+      (shimmer as any).massUnwrap(generator);
 
       mock.verify();
     });

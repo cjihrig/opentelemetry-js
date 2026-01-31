@@ -421,12 +421,10 @@ describe('Instruments', () => {
         readers: [new TestMetricReader()],
       }).getMeter('meter');
 
-      assert.doesNotThrow(() => {
-        meter.createHistogram('histogram', {
-          advice: {
-            explicitBucketBoundaries: [],
-          },
-        });
+      meter.createHistogram('histogram', {
+        advice: {
+          explicitBucketBoundaries: [],
+        },
       });
     });
 

@@ -41,17 +41,12 @@ describe('ZoneContextManager', () => {
   describe('.enable()', () => {
     it('should work', () => {
       const ctx = ROOT_CONTEXT.setValue(key1, 1);
-      assert.doesNotThrow(() => {
-        assert.ok(
-          contextManager.enable() === contextManager,
-          'should return this'
-        );
-        contextManager.with(ctx, () => {
-          assert.ok(
-            contextManager.active() === ctx,
-            'should have root context'
-          );
-        });
+      assert.ok(
+        contextManager.enable() === contextManager,
+        'should return this'
+      );
+      contextManager.with(ctx, () => {
+        assert.ok(contextManager.active() === ctx, 'should have root context');
       });
     });
   });
@@ -59,17 +54,15 @@ describe('ZoneContextManager', () => {
   describe('.disable()', () => {
     it('should work', () => {
       const ctx = ROOT_CONTEXT.setValue(key1, 1);
-      assert.doesNotThrow(() => {
+      assert.ok(
+        contextManager.disable() === contextManager,
+        'should return this'
+      );
+      contextManager.with(ctx, () => {
         assert.ok(
-          contextManager.disable() === contextManager,
-          'should return this'
+          contextManager.active() === ROOT_CONTEXT,
+          'should have root context'
         );
-        contextManager.with(ctx, () => {
-          assert.ok(
-            contextManager.active() === ROOT_CONTEXT,
-            'should have root context'
-          );
-        });
       });
     });
   });

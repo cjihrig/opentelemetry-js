@@ -543,9 +543,7 @@ describe('Trace', () => {
     });
 
     it('does not throw when deserializing an empty response', () => {
-      assert.doesNotThrow(() =>
-        ProtobufTraceSerializer.deserializeResponse(new Uint8Array([]))
-      );
+      ProtobufTraceSerializer.deserializeResponse(new Uint8Array([]));
     });
   });
 
@@ -597,9 +595,7 @@ describe('Trace', () => {
     });
 
     it('does not throw when deserializing an empty response', () => {
-      assert.doesNotThrow(() =>
-        JsonTraceSerializer.deserializeResponse(new Uint8Array([]))
-      );
+      JsonTraceSerializer.deserializeResponse(new Uint8Array([]));
     });
   });
 

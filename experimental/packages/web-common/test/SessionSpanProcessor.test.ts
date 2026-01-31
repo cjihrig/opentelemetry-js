@@ -85,9 +85,7 @@ describe('SessionSpanProcessor', function () {
       },
     });
 
-    assert.doesNotThrow(() => {
-      processor.onEnd(span as Span);
-    }, 'onEnd threw an error when it should not have');
+    processor.onEnd(span as Span);
   });
 
   it('shutdown is a no-op and does not throw error', async function () {

@@ -46,9 +46,7 @@ describe('WebTracerProvider', function () {
     });
 
     it('should work without default context manager', function () {
-      assert.doesNotThrow(() => {
-        new WebTracerProvider({});
-      });
+      new WebTracerProvider({});
     });
 
     describe('when contextManager is "ZoneContextManager"', function () {

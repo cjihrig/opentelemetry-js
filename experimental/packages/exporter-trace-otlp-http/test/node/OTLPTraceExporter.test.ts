@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert';
 import * as http from 'http';
 import * as sinon from 'sinon';
 import { Stream } from 'stream';
@@ -49,9 +48,7 @@ describe('OTLPTraceExporter', () => {
       fakeRequest.on('finish', () => {
         try {
           const requestBody = buff.toString();
-          assert.doesNotThrow(() => {
-            JSON.parse(requestBody);
-          }, 'expected requestBody to be in JSON format, but parsing failed');
+          JSON.parse(requestBody);
           done();
         } catch (e) {
           done(e);

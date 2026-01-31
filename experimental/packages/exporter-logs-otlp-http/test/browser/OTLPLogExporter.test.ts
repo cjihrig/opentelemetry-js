@@ -51,10 +51,7 @@ describe('OTLPLogExporter', function () {
         const args = stubBeacon.args[0];
         const blob: Blob = args[1] as unknown as Blob;
         const body = await blob.text();
-        assert.doesNotThrow(
-          () => JSON.parse(body),
-          'expected requestBody to be in JSON format, but parsing failed'
-        );
+        JSON.parse(body);
       });
     });
 
@@ -80,10 +77,7 @@ describe('OTLPLogExporter', function () {
         // assert
         const request = new Request(...stubFetch.args[0]);
         const body = await request.text();
-        assert.doesNotThrow(
-          () => JSON.parse(body),
-          'expected requestBody to be in JSON format, but parsing failed'
-        );
+        JSON.parse(body);
       });
     });
   });

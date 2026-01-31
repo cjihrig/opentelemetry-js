@@ -33,31 +33,27 @@ describe('StackContextManager', function () {
 
   describe('.enable()', function () {
     it('should work', function () {
-      assert.doesNotThrow(() => {
-        assert.ok(
-          contextManager.enable() === contextManager,
-          'should return this'
-        );
-        assert.ok(
-          contextManager.active() === ROOT_CONTEXT,
-          'should have root context'
-        );
-      });
+      assert.ok(
+        contextManager.enable() === contextManager,
+        'should return this'
+      );
+      assert.ok(
+        contextManager.active() === ROOT_CONTEXT,
+        'should have root context'
+      );
     });
   });
 
   describe('.disable()', function () {
     it('should work', function () {
-      assert.doesNotThrow(() => {
-        assert.ok(
-          contextManager.disable() === contextManager,
-          'should return this'
-        );
-        assert.ok(
-          contextManager.active() === ROOT_CONTEXT,
-          'should have no context'
-        );
-      });
+      assert.ok(
+        contextManager.disable() === contextManager,
+        'should return this'
+      );
+      assert.ok(
+        contextManager.active() === ROOT_CONTEXT,
+        'should have no context'
+      );
     });
   });
 

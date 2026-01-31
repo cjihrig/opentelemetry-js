@@ -919,9 +919,7 @@ describe('Metrics', () => {
     });
 
     it('does not throw when deserializing an empty response', () => {
-      assert.doesNotThrow(() =>
-        ProtobufMetricsSerializer.deserializeResponse(new Uint8Array([]))
-      );
+      ProtobufMetricsSerializer.deserializeResponse(new Uint8Array([]));
     });
   });
 
@@ -996,9 +994,7 @@ describe('Metrics', () => {
     });
 
     it('does not throw when deserializing an empty response', () => {
-      assert.doesNotThrow(() =>
-        JsonMetricsSerializer.deserializeResponse(new Uint8Array([]))
-      );
+      JsonMetricsSerializer.deserializeResponse(new Uint8Array([]));
     });
   });
 });

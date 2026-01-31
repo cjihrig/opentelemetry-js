@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { globalErrorHandler, setGlobalErrorHandler } from '../../src';
 import { Exception } from '@opentelemetry/api';
@@ -49,8 +48,6 @@ describe('globalErrorHandler', () => {
       throw new Error('bad things');
     });
 
-    assert.doesNotThrow(() => {
-      globalErrorHandler('an error');
-    });
+    globalErrorHandler('an error');
   });
 });

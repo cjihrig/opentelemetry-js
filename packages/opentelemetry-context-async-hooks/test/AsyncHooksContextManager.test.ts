@@ -47,24 +47,20 @@ for (const contextManagerClass of [
 
     describe('.enable()', () => {
       it('should work', () => {
-        assert.doesNotThrow(() => {
-          contextManager = new contextManagerClass();
-          assert.ok(
-            contextManager.enable() === contextManager,
-            'should return this'
-          );
-        });
+        contextManager = new contextManagerClass();
+        assert.ok(
+          contextManager.enable() === contextManager,
+          'should return this'
+        );
       });
     });
 
     describe('.disable()', () => {
       it('should work', () => {
-        assert.doesNotThrow(() => {
-          assert.ok(
-            contextManager.disable() === contextManager,
-            'should return this'
-          );
-        });
+        assert.ok(
+          contextManager.disable() === contextManager,
+          'should return this'
+        );
         contextManager.enable();
       });
     });

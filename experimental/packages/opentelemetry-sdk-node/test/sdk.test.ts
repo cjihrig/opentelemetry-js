@@ -1561,7 +1561,7 @@ describe('Node SDK', () => {
       process.env.OTEL_METRIC_EXPORT_TIMEOUT = '200';
       const sdk = new NodeSDK();
 
-      assert.doesNotThrow(() => sdk.start());
+      sdk.start();
 
       // expect a warning since timeout was explicitly set
       Sinon.assert.calledWithMatch(
@@ -1577,7 +1577,7 @@ describe('Node SDK', () => {
       process.env.OTEL_METRIC_EXPORT_INTERVAL = '100';
       const sdk = new NodeSDK();
 
-      assert.doesNotThrow(() => sdk.start());
+      sdk.start();
 
       // expect a info log since timeout was not explicitly set
       Sinon.assert.calledWithMatch(
@@ -1592,7 +1592,7 @@ describe('Node SDK', () => {
       process.env.OTEL_METRIC_EXPORT_INTERVAL = '-1';
       const sdk = new NodeSDK();
 
-      assert.doesNotThrow(() => sdk.start());
+      sdk.start();
 
       // expect a info log since timeout was not explicitly set
       Sinon.assert.calledWithMatch(
@@ -1607,7 +1607,7 @@ describe('Node SDK', () => {
       process.env.OTEL_METRIC_EXPORT_TIMEOUT = '-1';
       const sdk = new NodeSDK();
 
-      assert.doesNotThrow(() => sdk.start());
+      sdk.start();
 
       // expect a info log since timeout was not explicitly set
       Sinon.assert.calledWithMatch(
