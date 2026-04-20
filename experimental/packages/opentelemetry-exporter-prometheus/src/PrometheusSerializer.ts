@@ -24,6 +24,51 @@ import {
 // This is currently listed as experimental.
 const ATTR_OTEL_SCOPE_SCHEMA_URL = 'otel.scope.schema_url';
 
+const unitMap = new Map<string, string>([
+  // Time
+  ['d', 'days'],
+  ['h', 'hours'],
+  ['min', 'minutes'],
+  ['s', 'seconds'],
+  ['ms', 'milliseconds'],
+  ['us', 'microseconds'],
+  ['ns', 'nanoseconds'],
+
+  // Bytes
+  ['By', 'bytes'],
+  ['KiBy', 'kibibytes'],
+  ['MiBy', 'mebibytes'],
+  ['GiBy', 'gibibytes'],
+  ['TiBy', 'tibibytes'],
+  ['KBy', 'kilobytes'],
+  ['MBy', 'megabytes'],
+  ['GBy', 'gigabytes'],
+  ['TBy', 'terabytes'],
+
+  // SI
+  ['m', 'meters'],
+  ['V', 'volts'],
+  ['A', 'amperes'],
+  ['J', 'joules'],
+  ['W', 'watts'],
+  ['g', 'grams'],
+
+  // Misc
+  ['Cel', 'celsius'],
+  ['Hz', 'hertz'],
+  ['%', 'percent'],
+]);
+
+const perUnitMap = new Map<string, string>([
+  ['s', 'second'],
+  ['m', 'minute'],
+  ['h', 'hour'],
+  ['d', 'day'],
+  ['w', 'week'],
+  ['mo', 'month'],
+  ['y', 'year'],
+]);
+
 type PrometheusDataTypeLiteral =
   | 'counter'
   | 'gauge'
@@ -50,6 +95,48 @@ function escapeAttributeValue(str: AttributeValue = '') {
 
 const invalidCharacterRegex = /[^a-z0-9_]/gi;
 const multipleUnderscoreRegex = /_{2,}/g;
+
+function convertUnitToPrometheus(unit: string): string {
+  // Logic ported from https://github.com/prometheus/otlptranslator/blob/main/unit_namer.go
+  const unitTokens = ['', ''];
+  const index = unit.indexOf('/');
+
+  if (index === -1) {
+    unitTokens[0] = unit;
+  } else {
+    unitTokens[0] = unit.substring(0, index);
+    unitTokens[1] = unit.substring(index + 1);
+  }
+
+  let mainUnitSuffix = unitTokens[0].trim();
+  let perUnitSuffix = unitTokens[1].trim();
+
+  mainUnitSuffix = unitMap.get(mainUnitSuffix) ?? mainUnitSuffix;
+
+  if (perUnitSuffix !== '') {
+    perUnitSuffix = 'per_' + (perUnitMap.get(perUnitSuffix) ?? perUnitSuffix);
+  }
+
+  let result;
+
+  if (mainUnitSuffix !== '' && perUnitSuffix !== '') {
+    result = mainUnitSuffix + '_' + perUnitSuffix;
+  } else if (mainUnitSuffix !== '') {
+    result = mainUnitSuffix;
+  } else {
+    result = perUnitSuffix;
+  }
+
+  if (result.charAt(0) === '_') {
+    result = result.substring(1);
+  }
+
+  if (result.charAt(result.length - 1) === '_') {
+    result = result.substring(0, result.length - 1);
+  }
+
+  return escapeString(result);
+}
 
 /**
  * Ensures metric names are valid Prometheus metric names by removing
@@ -87,8 +174,13 @@ function sanitizePrometheusMetricName(name: string): string {
  */
 function enforcePrometheusNamingConvention(
   name: string,
-  data: MetricData
+  data: MetricData,
+  unit: string
 ): string {
+  if (unit !== '' && !name.endsWith('_' + unit)) {
+    name += '_' + unit;
+  }
+
   // Prometheus requires that metrics of the Counter kind have "_total" suffix
   if (
     !name.endsWith('_total') &&
@@ -244,15 +336,14 @@ export class PrometheusSerializer {
       name = `${this._prefix}${name}`;
     }
     const dataPointType = metricData.dataPointType;
+    const prometheusUnit = convertUnitToPrometheus(metricData.descriptor.unit);
 
-    name = enforcePrometheusNamingConvention(name, metricData);
+    name = enforcePrometheusNamingConvention(name, metricData, prometheusUnit);
 
     const help = `# HELP ${name} ${escapeString(
       metricData.descriptor.description || 'description missing'
     )}`;
-    const unit = metricData.descriptor.unit
-      ? `\n# UNIT ${name} ${escapeString(metricData.descriptor.unit)}`
-      : '';
+    const unit = prometheusUnit ? `\n# UNIT ${name} ${prometheusUnit}` : '';
     const type = `# TYPE ${name} ${toPrometheusType(metricData)}`;
     let additionalAttributes: Attributes | undefined;
 

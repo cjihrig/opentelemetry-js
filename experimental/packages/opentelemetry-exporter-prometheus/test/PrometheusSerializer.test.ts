@@ -627,10 +627,46 @@ describe('PrometheusSerializer', () => {
       assert.strictEqual(
         result,
         serializedDefaultResource +
-          '# HELP test_total description missing\n' +
-          `# UNIT test_total ${unitOfMetric}\n` +
-          '# TYPE test_total counter\n' +
-          'test_total{otel_scope_name="test"} 1\n'
+          '# HELP test_seconds_total description missing\n' +
+          `# UNIT test_seconds_total ${unitOfMetric}\n` +
+          '# TYPE test_seconds_total counter\n' +
+          'test_seconds_total{otel_scope_name="test"} 1\n'
+      );
+    });
+
+    it('should expand known abbreviations for units', async () => {
+      const serializer = new PrometheusSerializer();
+
+      const unitOfMetric = 'ms';
+      const result = await getCounterResult('test', serializer, {
+        unit: unitOfMetric,
+        exportAll: true,
+      });
+      assert.strictEqual(
+        result,
+        serializedDefaultResource +
+          '# HELP test_milliseconds_total description missing\n' +
+          `# UNIT test_milliseconds_total milliseconds\n` +
+          '# TYPE test_milliseconds_total counter\n' +
+          'test_milliseconds_total{otel_scope_name="test"} 1\n'
+      );
+    });
+
+    it('should convert "/" in a unit to "_per_"', async () => {
+      const serializer = new PrometheusSerializer();
+
+      const unitOfMetric = 's/m';
+      const result = await getCounterResult('test', serializer, {
+        unit: unitOfMetric,
+        exportAll: true,
+      });
+      assert.strictEqual(
+        result,
+        serializedDefaultResource +
+          '# HELP test_seconds_per_minute_total description missing\n' +
+          `# UNIT test_seconds_per_minute_total seconds_per_minute\n` +
+          '# TYPE test_seconds_per_minute_total counter\n' +
+          'test_seconds_per_minute_total{otel_scope_name="test"} 1\n'
       );
     });
 
@@ -669,6 +705,46 @@ describe('PrometheusSerializer', () => {
       const result = await getCounterResult('test_total', serializer);
 
       assert.strictEqual(result, 'test_total 1\n');
+    });
+
+    it('adds units to histogram names if necessary', async () => {
+      const serializer = new PrometheusSerializer();
+      const reader = new TestMetricReader();
+      const meterProvider = new MeterProvider({
+        views: [
+          {
+            aggregation: {
+              type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+              options: {
+                boundaries: [1, 10, 100],
+              },
+            },
+            instrumentName: '*',
+          },
+        ],
+        readers: [reader],
+      });
+      const meter = meterProvider.getMeter('test');
+      const histogram = meter.createHistogram('test', { unit: 'ms' });
+      histogram.record(5, attributes);
+
+      const { resourceMetrics, errors } = await reader.collect();
+      assert.strictEqual(errors.length, 0);
+      const result = serializer.serialize(resourceMetrics);
+
+      assert.strictEqual(
+        result,
+        serializedDefaultResource +
+          '# HELP test_milliseconds description missing\n' +
+          '# UNIT test_milliseconds milliseconds\n' +
+          '# TYPE test_milliseconds histogram\n' +
+          'test_milliseconds_count{foo1="bar1",foo2="bar2",otel_scope_name="test"} 1\n' +
+          'test_milliseconds_sum{foo1="bar1",foo2="bar2",otel_scope_name="test"} 5\n' +
+          'test_milliseconds_bucket{foo1="bar1",foo2="bar2",otel_scope_name="test",le="1"} 0\n' +
+          'test_milliseconds_bucket{foo1="bar1",foo2="bar2",otel_scope_name="test",le="10"} 1\n' +
+          'test_milliseconds_bucket{foo1="bar1",foo2="bar2",otel_scope_name="test",le="100"} 1\n' +
+          'test_milliseconds_bucket{foo1="bar1",foo2="bar2",otel_scope_name="test",le="+Inf"} 1\n'
+      );
     });
   });
 
